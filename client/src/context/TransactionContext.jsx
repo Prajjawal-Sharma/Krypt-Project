@@ -12,46 +12,98 @@ const getEthereumContract = () => {
     const signer = provider.getsigner();
     const trancactionContract = new ethers.Contract(contractAddress,contractABI,signer);
     
-    console.log((
-        provider,
-        signer,
-        trancactionContract
-
-    ));
+    return transactionContract;
+    
 }
 
 export const TransactionProvider = ({children}) => {
 
-    const [ConnectedAccount, setConnectAccount] = useState(initialState)
-    const checkIfWalletIsConnected = async() => {
-        if(!ethereum) return alert("Please install metamask");
+    const [currentAccount, setCurrentAccount] = useState()
+    const [formData,setFormData] = useState({addressTo:'',amount:'' ,keyword:'', message: '' });
+    const [isLoading, setisLoading] = useState(false);
+    const [TransactionCount, setTransactionCount] = useState(localStorage.getItem('transactionCount'));
 
-        const accounts= await ethereum.request({method:'eth_requestAccounts'});
-
-        setConnectAccount(accounts(0));
-
-        console.log(accounts);
+    const handleChange= (e, name) => {
+        setFormData((prevState) => ({ ...prevState, [name]: e.target.value}));
     }
 
-    const connectWallet = async () => {
-        try { if(!ethereum) return alert("Please install metamask");
-            
-            
-        const accounts= await ethereum.request({method:'eth_accounts'});
+    const checkIfWalletIsConnected = async() => {
+            try {
+                if(!ethereum) return alert("Please install metamask");
+
+                const accounts= await ethereum.request({method:'eth_accounts'});
+
+                if(accounts.length){
+                    setCurrentAccount(accounts[0]);
+
+                    //getAllTransactions();
+                } else{
+                    console.log('No accounts found');
+            }
+
+            console.log(accounts);
+                
+            } catch (error) {
+                console.log(error);
+
+                throw new Error("No ethereum object.")
+            }
+
+        
+    }
+
+    const connectWallet =async() => {
+        try {
+            if(!ethereum) return alert("Please install metamask");
+
+            const accounts= await ethereum.request({method:'eth_requestAccounts'});
+
+            setCurrentAccount(accounts[0]);
         } catch (error) {
             console.log(error);
 
-            throw new Error("No ethereum object")
-
+            throw new Error("No ethereum object.")
+            
         }
     }
 
+    const sendTransaction = async() => {
+        try {
+            if(!ethereum) return alert("Please install metamask");
+
+            const {addressTo,amount,keyword,message} = formData;
+            const transactionContract= getEthereumContract();
+            const parsedAmount = ethers.util.parsedEther(amount);
+
+            await ethereum.request({
+                method: 'eth_sendTransaction',
+                params: [{
+                    from: currentAccount,
+                    to: addressTo,
+                    gas: '0x5208',    // 21000 GWEI
+                    value: parsedAmount._hex, //0.00001
+                }]
+            });
+            const transactionHash= await transactionContract.addToBlockchain(addressTo,parsedAmount,message,keyword);
+            setisLoading(true);
+            console.log('Loading - ${transactionHash.hash}');
+            setisLoading(false);
+            console.log('Success - ${transactionHash.hash}');
+
+            const transactionCount = await transactionContract.getTransactionCount();
+            setTransactionCount(transactionCount.toNumber());
+        } catch (error) {
+            console.log(error);
+
+            throw new Error("No ethereum object.")
+        }
+    }
     useEffect(() => {
       checkIfWalletIsConnected();
     }, [])
-    
+
     return(
-        <TransactionContext.Provider value ={{connectWallet}}>
+        <TransactionContext.Provider value ={{connectWallet,currentAccount,formData,setFormData,handleChange,sendTransaction}}>
             {children}
         </TransactionContext.Provider>
     )
