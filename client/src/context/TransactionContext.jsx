@@ -9,19 +9,17 @@ const {ethereum} = window;
 
 const getEthereumContract = () => {
     const provider =  new ethers.providers.Web3Provider(ethereum);
-    const signer = provider.getsigner();
-    const trancactionContract = new ethers.Contract(contractAddress,contractABI,signer);
-    
+    const signer = provider.getSigner();
+    const transactionContract = new ethers.Contract(contractAddress,contractABI,signer);
     return transactionContract;
-    
 }
 
 export const TransactionProvider = ({children}) => {
 
-    const [currentAccount, setCurrentAccount] = useState()
+    const [currentAccount, setCurrentAccount] = useState('')
     const [formData,setFormData] = useState({addressTo:'',amount:'' ,keyword:'', message: '' });
-    const [isLoading, setisLoading] = useState(false);
-    const [TransactionCount, setTransactionCount] = useState(localStorage.getItem('transactionCount'));
+    const [isLoading, setIsLoading] = useState(false);
+    const [transactionCount, setTransactionCount] = useState(localStorage.getItem('transactionCount'));
 
     const handleChange= (e, name) => {
         setFormData((prevState) => ({ ...prevState, [name]: e.target.value}));
@@ -40,7 +38,6 @@ export const TransactionProvider = ({children}) => {
                 } else{
                     console.log('No accounts found');
             }
-
             console.log(accounts);
                 
             } catch (error) {
@@ -48,10 +45,7 @@ export const TransactionProvider = ({children}) => {
 
                 throw new Error("No ethereum object.")
             }
-
-        
-    }
-
+        }
     const connectWallet =async() => {
         try {
             if(!ethereum) return alert("Please install metamask");
@@ -73,7 +67,7 @@ export const TransactionProvider = ({children}) => {
 
             const {addressTo,amount,keyword,message} = formData;
             const transactionContract= getEthereumContract();
-            const parsedAmount = ethers.util.parsedEther(amount);
+            const parsedAmount = ethers.utils.parseEther(amount);
 
             await ethereum.request({
                 method: 'eth_sendTransaction',
@@ -85,13 +79,16 @@ export const TransactionProvider = ({children}) => {
                 }]
             });
             const transactionHash= await transactionContract.addToBlockchain(addressTo,parsedAmount,message,keyword);
-            setisLoading(true);
+            setIsLoading(true);
             console.log('Loading - ${transactionHash.hash}');
-            setisLoading(false);
+            await transactionHash.wait();
+            setIsLoading(false);
             console.log('Success - ${transactionHash.hash}');
 
             const transactionCount = await transactionContract.getTransactionCount();
             setTransactionCount(transactionCount.toNumber());
+            alert(`Successfully sent to address: ${addressTo}`);
+            setTimeout(()=>window.location.reload(),3000); //Refresh page after
         } catch (error) {
             console.log(error);
 

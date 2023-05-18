@@ -33,9 +33,9 @@ const Welcome = () => {
 
         e.preventDefault();
 
-        if(!addressTo || !amount || !keyword || !message) return;
-
-        sendTransaction();
+        if(!addressTo || !amount || !keyword || !message) 
+        
+        return sendTransaction();
     }
     return (
         <div className="flex w-full justify-center items-center">
@@ -77,7 +77,7 @@ const Welcome = () => {
                                 <div className="w-10 h-10 rounded-full border-2 border-white flex justify-center items-center">
                                     <SiEthereum fontSize={21} color="#fff" />
                                 </div>
-                                <BsInfoCircle fontsize={17} color="#fff" />
+                                <BsInfoCircle fontSize={17} color="#fff" />
                             </div>
                             <div>
                                 <p className="text-white font-light text-sm"> Address</p>
