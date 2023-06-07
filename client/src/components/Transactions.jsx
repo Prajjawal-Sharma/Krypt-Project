@@ -12,14 +12,27 @@ const TransactionCard =({addressTo,addressFrom,timestamp,message,keyword,amount,
         sm:max-w-[300px]
         flex-col p-3 rounded-md hover:shadow-2xl'>
             <div className='flex flex-xol items-center w-full mt-3'>
-                <div className='flex justify-start w-full mb-6 p-2'>
+                <div className='w-full mb-6 p-2'>
                     <a href={`https://sepolia.etherscan.io/address/${addressFrom}`} target="_blank" rel="noopener noreferrer">
                         <p className='text-white text-base'>From: {shortenAddress(addressFrom)} </p>
 
                     </a>
+                    <a href={`https://sepolia.etherscan.io/address/${addressTo}`} target="_blank" rel="noopener noreferrer">
+                        <p className='text-white text-base'>To {shortenAddress(addressTo)} </p>
+
+                    </a>
+                    <p className='text-white text-base'>Amount: {amount} ETH</p>
+                    {message && (
+                        <>
+                        <br />
+                        <p className='text-white text-base'>Message: {message}</p>
+                        </>
+                    )}
 
                 </div>
-
+                <div className='bg-black p-3 px-5 w-max rounded-3xl -mt-5 shadow-2xl'>
+                        <p className='text-[#37c7da] font-bold'>{timestamp}</p>
+                    </div>
             </div>
         </div>
     ) 
@@ -27,7 +40,7 @@ const TransactionCard =({addressTo,addressFrom,timestamp,message,keyword,amount,
 }
 
 const Transactions = () => {
-    const { currentAccount } = useContext(TransactionContext);
+    const { currentAccount,transactions } = useContext(TransactionContext);
     return (
         <div className="flex w-full justify-center items-center 2xl:px-20 gradient-bg-transactions">
             <div className='flex flex-col md:p-12 py-12 px-4'>
@@ -37,7 +50,7 @@ const Transactions = () => {
                     <h3 className='text-white text-3xl text-center my-2'>Connect your account to see the latest changes</h3>
                 )}
                <div className='flex flex-wrap justify-center items-center mt-10'>
-                {dummyData.reverse().map((Transaction, i ) => (
+                {transactions.reverse().map((Transaction, i ) => (
                     <TransactionCard key={i} {...Transaction}/>
                 ))}
                </div>
