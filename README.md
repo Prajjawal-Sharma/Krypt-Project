@@ -43,3 +43,11 @@ This project aims to develop a decentralized blockchain application that leverag
    - Wait for the transaction to be confirmed on the Sepolia test network.
    - Verify that the transaction in the transaction history section, the crypto amount has been transferred to the recipient's wallet.
 
+7. **Verify Your Transaction:**
+   - Navigate to the transaction history section.
+   - Here, you can view and track all your past transactions.
+   - Locate the transaction you just processed to verify its status and details by clicking on it.
+   - You will be redirected to etherscan.io for sepolia test net.
+   
+  
+
