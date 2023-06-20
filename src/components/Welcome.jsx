@@ -3,6 +3,8 @@ import { AiFillPlayCircle} from 'react-icons/ai';
 import {SiEthereum } from 'react-icons/si';
 import {BsInfoCircle} from 'react-icons/bs';
 
+import metamask from "../../images/metamask.png";
+
 import { TransactionContext } from '../context/TransactionContext';
 import{ Loader } from './';
 import { shortenAddress } from '../utils/shortenAddress';
@@ -46,11 +48,11 @@ const Welcome = () => {
                         Send Crypto <br /> across the world
                     </h1>
                     <p className="text-left mt-5 text-white font-light md:w-9/12 w-11/12 text-base">
-                        Explore the crypto world. Buy and sell cryptocurrencies easily on Krypto.
+                        Explore the crypto world. Transfer ETH easily using sepolia testnet on KryptPe.
                     </p>
                     {!currentAccount &&(
                     <button type="button" onClick={connectWallet} className="flex flex-row justify-center items-center my-5 bg-[#2952e3] p-3 rounded-full cursor-pointer hover:bg-[#2546bd]"> 
-                        <p className="text-white text-base font-bold">Connect Wallet</p>
+                        <p className="text-white text-base font-bold"><img src={metamask} alt="metamask logo" className="w-10 cursor-pointer inline-block mb-3 mr-5" />Connect to Metamask</p>
                     </button>
                     )}
                     <div className="grid sm:grid-cols-3 grid-cols-2 w-full mt-10">
